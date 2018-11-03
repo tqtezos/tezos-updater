@@ -24,7 +24,7 @@ start_node() {
 }
 
 s3_sync_down() {
-	aws s3 sync --region $region s3://$bucket/$s3key /home/tezos/.tezos-node
+	aws s3 sync --region $region s3://$chainbucket/$s3key /home/tezos/.tezos-node
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync command failed; exiting."
@@ -49,7 +49,7 @@ s3_sync_up() {
 
 	# Lock the S3 bucket so clients won't download inconsistent chain data
 	touch /tmp/locked
-	aws s3 cp --region $region /tmp/locked s3://$bucket/
+	aws s3 cp --region $region /tmp/locked s3://$chainbucket/
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 cp command failed; exiting."
@@ -58,7 +58,7 @@ s3_sync_up() {
 
 	sleep 30
 
-	aws s3 sync --delete --region $region /home/tezos/.tezos-node s3://$bucket/$s3key
+	aws s3 sync --delete --region $region /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
@@ -66,12 +66,12 @@ s3_sync_up() {
 	fi
 
 	# Remove the lock from the S3 bucket so clients can once again download the chain data
-	aws s3 rm --region $region s3://$bucket/locked
+	aws s3 rm --region $region s3://$chainbucket/locked
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 rm command failed; retrying."
         sleep 5
-        aws s3 rm --region $region s3://$bucket/locked
+        aws s3 rm --region $region s3://$chainbucket/locked
         if [ $? -ne 0 ]
 		then
 			echo "aws s3 rm command failed; exiting."
