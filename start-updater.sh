@@ -58,7 +58,7 @@ s3_sync_up() {
 
 	sleep 30
 
-	aws s3 sync --delete --region $region /home/tezos/.tezos-node s3://$chainbucket/$s3key
+	aws s3 sync --acl public-read --delete --region $region /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
