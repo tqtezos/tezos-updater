@@ -49,7 +49,7 @@ s3_sync_up() {
 
 	# Lock the S3 bucket so clients won't download inconsistent chain data
 	touch /tmp/locked
-	aws s3 cp --region $region /tmp/locked s3://$chainbucket/
+	aws s3 cp --region $region --acl public-read /tmp/locked s3://$chainbucket/
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 cp command failed; exiting."
@@ -58,7 +58,7 @@ s3_sync_up() {
 
 	sleep 30
 
-	aws s3 sync --delete --region $region /home/tezos/.tezos-node s3://$chainbucket/$s3key
+	aws s3 sync --delete --region $region --acl public-read /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
