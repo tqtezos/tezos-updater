@@ -1,4 +1,4 @@
-FROM tezos/tezos:mainnet
+FROM tezos/tezos:zeronet
 
 # Install AWS CLI
 
