@@ -102,12 +102,12 @@ s3_sync_up() {
 	else
 		echo "Touching current1 key, as the node1 key was just updated."
 		touch ~/current1
-		aws s3 cp --region $region ~/current1 s3://$chainbucket/
+		aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
 		if [ $? -ne 0 ]
 		then
 			echo "aws s3 cp command failed; retrying."
 			sleep 5
-			aws s3 cp --region $region ~/current1 s3://$chainbucket/
+			aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
 			if [ $? -ne 0 ]
 			then
 				echo "aws s3 cp command failed; exiting."
@@ -128,7 +128,7 @@ continuous() {
 	while true
 	do
 		echo "Sleeping for 1 hour at `date`..."
-		sleep 300
+		sleep 3600
 		echo "Cleanly shutting down the node so we can update S3 with the latest chaindata at `date`..."
 		kill_node
 		echo "Syncing chain data to S3 at `date`..."
