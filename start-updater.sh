@@ -65,6 +65,8 @@ s3_sync_up() {
 	[ $? -ne 0 ] && echo "Error moving config.json to /tmp"
 	mv /home/tezos/.tezos-node/identity.json /tmp
 	[ $? -ne 0 ] && echo "Error moving identity.json to /tmp"
+	mv /home/tezos/.tezos-node/peers.json /tmp
+	[ $? -ne 0 ] && echo "Error moving peers.json to /tmp"
 
 	# If the current1 object exists, node1 is the folder that clients will download, so we should update node2
 	aws s3api head-object --bucket $chainbucket --key current1
@@ -120,6 +122,8 @@ s3_sync_up() {
 	[ $? -ne 0 ] && echo "Error moving config.json to /home/tezos/.tezos-node/"
 	mv /tmp/identity.json /home/tezos/.tezos-node/
 	[ $? -ne 0 ] && echo "Error moving identity.json to /home/tezos/.tezos-node/"
+	mv /tmp/peers.json /home/tezos/.tezos-node/
+	[ $? -ne 0 ] && echo "Error moving peers.json to /home/tezos/.tezos-node/"
 }
 
 continuous() {
