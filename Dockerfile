@@ -1,4 +1,4 @@
-FROM tezos/tezos:mainnet-staging
+FROM tezos/tezos:mainnet_d272059b_20190408095721
 
 # Install AWS CLI
 
