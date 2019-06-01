@@ -1,4 +1,4 @@
-FROM tezos/tezos:alphanet_ea095e59_20190321190220
+FROM tezos/tezos:alphanet_89fb18cc_20190525160240
 
 # Install AWS CLI
 
