@@ -10,16 +10,24 @@ init_node() {
 	tezos-node config init "$@" \
 		--rpc-addr="127.0.0.1:$rpcport" \
 		--net-addr="[::]:$netport" \
+		--history-mode=archive \
 		--connections 500
     cat /home/tezos/.tezos-node/config.json
 }
 
 start_node() {
-	tezos-node run &
+	# If storage is already on v0.0.3, this command has no effect
+	tezos-node upgrade storage
 	if [ $? -ne 0 ]
 	then
         echo "Node failed to start; exiting."
         exit 1
+	fi
+	tezos-node run &
+	if [ $? -ne 0 ]
+	then
+        echo "Node failed to start; exiting."
+        exit 2
 	fi
 }
 
