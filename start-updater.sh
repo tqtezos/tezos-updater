@@ -139,8 +139,8 @@ continuous() {
 	# and sync the chain data with S3, then restarts the node.
 	while true
 	do
-		echo "Sleeping for 1 hour at `date`..."
-		sleep 3600
+		echo "Sleeping for 30 minutes at `date`..."
+		sleep 1800
 		echo "Cleanly shutting down the node so we can update S3 with the latest chaindata at `date`..."
 		kill_node
 		echo "Syncing chain data to S3 at `date`..."
