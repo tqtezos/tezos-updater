@@ -43,7 +43,7 @@ s3_sync_down() {
 		s3key=node2
 	fi
 
-	aws s3 sync --region $region s3://$chainbucket/$s3key /home/tezos/.tezos-node
+	aws s3 sync --region $region --no-progress s3://$chainbucket/$s3key /home/tezos/.tezos-node
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync command failed; exiting."
@@ -87,7 +87,7 @@ s3_sync_up() {
 		s3key=node1
 	fi
 
-	aws s3 sync --delete --region $region --acl public-read /home/tezos/.tezos-node s3://$chainbucket/$s3key
+	aws s3 sync --delete --region $region --no-progress --acl public-read /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
