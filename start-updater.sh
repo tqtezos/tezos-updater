@@ -52,6 +52,12 @@ kill_node() {
 		sleep 30
 		echo "Waiting for the node to shutdown cleanly... try number $tries"
 		let "tries+=1"
+		if [ $tries -gt 29 ]
+		then
+			echo "Node has not stopped cleanly after $tries, forcibly killing."
+			pid=`ps -ef |grep tezos-node|grep -v grep|awk '{print $1}'`
+			kill -9 $pid
+		fi
 		if [ $tries -gt 30 ]
 		then
 			echo "Node has not stopped cleanly after $tries, exiting..."
