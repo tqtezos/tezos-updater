@@ -45,7 +45,7 @@ s3_sync_down() {
 
 kill_node() {
 	tries=0
-	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|awk '{print $1}'` ]
+	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'` ]
 	do
 		pid=`ps -ef |grep tezos-node|grep -v grep|awk '{print $1}'`
 		kill $pid
