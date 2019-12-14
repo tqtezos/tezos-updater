@@ -55,7 +55,7 @@ kill_node() {
 		if [ $tries -gt 29 ]
 		then
 			echo "Node has not stopped cleanly after $tries, forcibly killing."
-			pid=`ps -ef |grep tezos-node|grep -v grep|awk '{print $1}'`
+			pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'`
 			kill -9 $pid
 		fi
 		if [ $tries -gt 30 ]
