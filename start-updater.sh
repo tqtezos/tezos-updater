@@ -16,7 +16,7 @@ init_node() {
 }
 
 start_node() {
-	# If storage is already on v0.0.3, this command has no effect
+	# If storage is already on the latest version, this command has no effect
 	tezos-node upgrade storage
 	if [ $? -ne 0 ]
 	then
@@ -53,13 +53,19 @@ s3_sync_down() {
 
 kill_node() {
 	tries=0
-	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|awk '{print $1}'` ]
+	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'` ]
 	do
-		pid=`ps -ef |grep tezos-node|grep -v grep|awk '{print $1}'`
+		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'`
 		kill $pid
 		sleep 30
 		echo "Waiting for the node to shutdown cleanly... try number $tries"
 		let "tries+=1"
+		if [ $tries -gt 29 ]
+		then
+			echo "Node has not stopped cleanly after $tries, forcibly killing."
+			pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'`
+			kill -9 $pid
+		fi
 		if [ $tries -gt 30 ]
 		then
 			echo "Node has not stopped cleanly after $tries, exiting..."
