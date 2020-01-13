@@ -1,4 +1,4 @@
-FROM tezos/tezos:mainnet_7a877820_20191211150203
+FROM tezos/tezos:mainnet_28309c81_20200110101146
 
 # Install AWS CLI
 
