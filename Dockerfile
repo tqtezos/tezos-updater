@@ -1,4 +1,4 @@
-FROM tezos/tezos:babylonnet_b8731913_20190927183946
+FROM tezos/tezos:carthagenet_ee87c704_20191211160332
 
 # Install AWS CLI
 
