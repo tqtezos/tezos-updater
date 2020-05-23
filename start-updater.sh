@@ -2,15 +2,13 @@
 # Starts the Tezos updater client
 # Written by Luke Youngblood, luke@blockscale.net
 
-rpcport=8732
-netport=9732
-
 init_node() {
     tezos-node identity generate 26
 	tezos-node config init "$@" \
 		--rpc-addr="127.0.0.1:$rpcport" \
 		--net-addr="[::]:$netport" \
-		--connections 40
+		--network=$network \
+		--connections=$connections
     cat /home/tezos/.tezos-node/config.json
 }
 
