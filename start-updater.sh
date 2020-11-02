@@ -12,7 +12,7 @@ init_node() {
 		--net-addr="[::]:$netport" \
 		--history-mode=archive \
 		--network=$network \
-		--connections $connections
+		--connections=$connections
     cat /home/tezos/.tezos-node/config.json
 }
 
