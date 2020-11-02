@@ -2,22 +2,33 @@
 # Starts the Tezos updater client
 # Written by Luke Youngblood, luke@blockscale.net
 
+rpcport=8732
+netport=9732
+
 init_node() {
     tezos-node identity generate 26
 	tezos-node config init "$@" \
 		--rpc-addr="127.0.0.1:$rpcport" \
 		--net-addr="[::]:$netport" \
+		--history-mode=archive \
 		--network=$network \
 		--connections=$connections
     cat /home/tezos/.tezos-node/config.json
 }
 
 start_node() {
+	# If storage is already on the latest version, this command has no effect
+	tezos-node upgrade storage
+	if [ $? -ne 0 ]
+	then
+        echo "Node failed to start; exiting."
+        exit 2
+	fi
 	tezos-node run &
 	if [ $? -ne 0 ]
 	then
         echo "Node failed to start; exiting."
-        exit 1
+        exit 2
 	fi
 }
 
@@ -33,7 +44,7 @@ s3_sync_down() {
 		s3key=node2
 	fi
 
-	aws s3 sync --region $region s3://$chainbucket/$s3key /home/tezos/.tezos-node
+	aws s3 sync --region $region --no-progress s3://$chainbucket/$s3key /home/tezos/.tezos-node
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync command failed; exiting."
@@ -43,9 +54,9 @@ s3_sync_down() {
 
 kill_node() {
 	tries=0
-	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'` ]
+	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|grep -v tezos-protocol-compiler|awk '{print $1}'` ]
 	do
-		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'`
+		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|grep -v tezos-protocol-compiler|awk '{print $1}'`
 		kill $pid
 		sleep 30
 		echo "Waiting for the node to shutdown cleanly... try number $tries"
@@ -83,7 +94,7 @@ s3_sync_up() {
 		s3key=node1
 	fi
 
-	aws s3 sync --delete --region $region --acl public-read /home/tezos/.tezos-node s3://$chainbucket/$s3key
+	aws s3 sync --delete --region $region --no-progress /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
@@ -108,12 +119,12 @@ s3_sync_up() {
 	else
 		echo "Touching current1 key, as the node1 key was just updated."
 		touch ~/current1
-		aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
+		aws s3 cp --region $region ~/current1 s3://$chainbucket/
 		if [ $? -ne 0 ]
 		then
 			echo "aws s3 cp command failed; retrying."
 			sleep 5
-			aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
+			aws s3 cp --region $region ~/current1 s3://$chainbucket/
 			if [ $? -ne 0 ]
 			then
 				echo "aws s3 cp command failed; exiting."
@@ -135,8 +146,8 @@ continuous() {
 	# and sync the chain data with S3, then restarts the node.
 	while true
 	do
-		echo "Sleeping for 1 hour at `date`..."
-		sleep 3600
+		echo "Sleeping for 30 minutes at `date`..."
+		sleep 1800
 		echo "Cleanly shutting down the node so we can update S3 with the latest chaindata at `date`..."
 		kill_node
 		echo "Syncing chain data to S3 at `date`..."
