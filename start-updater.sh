@@ -30,6 +30,12 @@ start_node() {
         echo "Node failed to start; exiting."
         exit 2
 	fi
+	tezos-node run &
+	if [ $? -ne 0 ]
+	then
+        echo "Node failed to start; exiting."
+        exit 2
+	fi
 }
 
 s3_sync_down() {
