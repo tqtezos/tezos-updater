@@ -23,6 +23,7 @@ start_node() {
         echo "Node failed to start; exiting."
         exit 1
 	fi
+	ps -ax | grep tezos-
 	tezos-node run &
 	if [ $? -ne 0 ]
 	then
@@ -72,6 +73,7 @@ kill_node() {
 			exit 3
 		fi
 	done
+	ps -ax | grep tezos-
 }
 
 s3_sync_up() {
