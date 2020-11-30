@@ -87,7 +87,7 @@ s3_sync_up() {
 		s3key=node1
 	fi
 
-	aws s3 sync --delete --region $region --no-progress --acl public-read /home/tezos/.tezos-node s3://$chainbucket/$s3key
+	aws s3 sync --delete --region $region --no-progress /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
@@ -112,12 +112,12 @@ s3_sync_up() {
 	else
 		echo "Touching current1 key, as the node1 key was just updated."
 		touch ~/current1
-		aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
+		aws s3 cp --region $region ~/current1 s3://$chainbucket/
 		if [ $? -ne 0 ]
 		then
 			echo "aws s3 cp command failed; retrying."
 			sleep 5
-			aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
+			aws s3 cp --region $region ~/current1 s3://$chainbucket/
 			if [ $? -ne 0 ]
 			then
 				echo "aws s3 cp command failed; exiting."
