@@ -11,19 +11,12 @@ init_node() {
 		--rpc-addr="127.0.0.1:$rpcport" \
 		--net-addr="[::]:$netport" \
 		--history-mode=archive \
-		--connections 40
+		--network=$network \
+		--connections $connections
     cat /home/tezos/.tezos-node/config.json
 }
 
 start_node() {
-	# If storage is already on the latest version, this command has no effect
-	tezos-node upgrade storage
-	if [ $? -ne 0 ]
-	then
-        echo "Node failed to start; exiting."
-        exit 1
-	fi
-	ps -ef
 	tezos-node run &
 	if [ $? -ne 0 ]
 	then
@@ -54,9 +47,9 @@ s3_sync_down() {
 
 kill_node() {
 	tries=0
-	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'` ]
+	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|grep -v tezos-protocol-compiler|awk '{print $1}'` ]
 	do
-		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'`
+		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|grep -v tezos-protocol-compiler|awk '{print $1}'`
 		kill $pid
 		sleep 30
 		echo "Waiting for the node to shutdown cleanly... try number $tries"
@@ -73,7 +66,6 @@ kill_node() {
 			exit 3
 		fi
 	done
-	ps -ef
 }
 
 s3_sync_up() {
