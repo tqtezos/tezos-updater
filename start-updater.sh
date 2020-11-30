@@ -12,25 +12,11 @@ init_node() {
 		--net-addr="[::]:$netport" \
 		--history-mode=archive \
 		--network=$network \
-		--connections=$connections
+		--connections $connections
     cat /home/tezos/.tezos-node/config.json
 }
 
 start_node() {
-	# If storage is already on the latest version, this command has no effect
-	tezos-node upgrade storage
-	if [ $? -ne 0 ]
-	then
-        echo "Node failed to start; exiting."
-        exit 2
-	fi
-	tezos-node run &
-	if [ $? -ne 0 ]
-	then
-        echo "Node failed to start; exiting."
-        exit 2
-	fi
-	ps -ef
 	tezos-node run &
 	if [ $? -ne 0 ]
 	then
@@ -80,7 +66,6 @@ kill_node() {
 			exit 3
 		fi
 	done
-	ps -ef
 }
 
 s3_sync_up() {
