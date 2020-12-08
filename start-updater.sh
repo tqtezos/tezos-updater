@@ -17,6 +17,13 @@ init_node() {
 }
 
 start_node() {
+	# If storage is already on the latest version, this command has no effect
+	tezos-node upgrade storage
+	if [ $? -ne 0 ]
+	then
+        echo "Node failed to start; exiting."
+        exit 2
+	fi
 	tezos-node run &
 	if [ $? -ne 0 ]
 	then
@@ -87,7 +94,7 @@ s3_sync_up() {
 		s3key=node1
 	fi
 
-	aws s3 sync --delete --region $region --no-progress /home/tezos/.tezos-node s3://$chainbucket/$s3key
+	aws s3 sync --delete --region $region --no-progress --acl public-read /home/tezos/.tezos-node s3://$chainbucket/$s3key
 	if [ $? -ne 0 ]
 	then
         echo "aws s3 sync upload command failed; exiting."
