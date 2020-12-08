@@ -12,7 +12,7 @@ init_node() {
 		--net-addr="[::]:$netport" \
 		--history-mode=archive \
 		--network=$network \
-		--connections=$connections
+		--connections $connections
     cat /home/tezos/.tezos-node/config.json
 }
 
@@ -54,9 +54,9 @@ s3_sync_down() {
 
 kill_node() {
 	tries=0
-	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'` ]
+	while [ ! -z `ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|grep -v tezos-protocol-compiler|awk '{print $1}'` ]
 	do
-		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|awk '{print $1}'`
+		pid=`ps -ef |grep tezos-node|grep -v grep|grep -v tezos-validator|grep -v tezos-protocol-compiler|awk '{print $1}'`
 		kill $pid
 		sleep 30
 		echo "Waiting for the node to shutdown cleanly... try number $tries"
@@ -119,12 +119,12 @@ s3_sync_up() {
 	else
 		echo "Touching current1 key, as the node1 key was just updated."
 		touch ~/current1
-		aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
+		aws s3 cp --region $region ~/current1 s3://$chainbucket/
 		if [ $? -ne 0 ]
 		then
 			echo "aws s3 cp command failed; retrying."
 			sleep 5
-			aws s3 cp --region $region --acl public-read ~/current1 s3://$chainbucket/
+			aws s3 cp --region $region ~/current1 s3://$chainbucket/
 			if [ $? -ne 0 ]
 			then
 				echo "aws s3 cp command failed; exiting."
